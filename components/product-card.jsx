@@ -207,28 +207,6 @@ export default function ProductCard({ product }) {
                   </div>
                 </div>
               )}
-
-              {/* Thumbnail strip - Enhanced */}
-              {hasImages && images.length > 1 && (
-                <div className="absolute bottom-16 sm:bottom-20 left-2 sm:left-4 right-2 sm:right-4 z-30">
-                  <div className="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 scrollbar-hide">
-                    {images.map((imageUrl, index) => (
-                      <div
-                        key={index}
-                        className="relative flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 border-white/50 hover:border-white transition-all cursor-pointer"
-                      >
-                        <Image
-                          src={imageUrl}
-                          alt={`Thumbnail ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 640px) 48px, 64px"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Product Details Section */}

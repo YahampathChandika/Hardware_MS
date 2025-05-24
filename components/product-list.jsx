@@ -5,7 +5,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { Package, Calendar, Images, Tag, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -27,7 +26,11 @@ export default function ProductList({ product }) {
   const images = product.images || [];
   const hasImages = images.length > 0;
 
-  const handleCardClick = () => {
+  const handleCardClick = (e) => {
+    // Check if the click came from carousel navigation buttons
+    if (e.target.closest(".carousel-button")) {
+      return;
+    }
     setModalOpen(true);
   };
 
@@ -80,18 +83,8 @@ export default function ProductList({ product }) {
 
                     {images.length > 1 && (
                       <>
-                        <CarouselPrevious
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                          className="absolute left-2 sm:left-1 !size-6 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10"
-                        />
-                        <CarouselNext
-                          onClick={(e) => {
-                            e.stopPropagation();
-                          }}
-                          className="absolute right-2 sm:right-1 !size-6 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10"
-                        />
+                        <CarouselPrevious className="carousel-button absolute left-2 sm:left-1 !size-6 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10" />
+                        <CarouselNext className="carousel-button absolute right-2 sm:right-1 !size-6 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10" />
                       </>
                     )}
                   </Carousel>
@@ -207,7 +200,7 @@ export default function ProductList({ product }) {
                   <Carousel className="w-full h-full">
                     <CarouselContent className="h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] -ml-0">
                       {images.map((imageUrl, index) => (
-                        <CarouselItem key={index} className="h-full  pl-0">
+                        <CarouselItem key={index} className="h-full pl-0">
                           <div className="relative w-full h-full">
                             <Image
                               src={imageUrl}
@@ -244,28 +237,6 @@ export default function ProductList({ product }) {
                     <p className="text-base sm:text-lg font-medium">
                       No Images Available
                     </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Thumbnail strip - Enhanced */}
-              {hasImages && images.length > 1 && (
-                <div className="absolute bottom-16 sm:bottom-20 left-2 sm:left-4 right-2 sm:right-4 z-30">
-                  <div className="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 scrollbar-hide">
-                    {images.map((imageUrl, index) => (
-                      <div
-                        key={index}
-                        className="relative flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 border-white/50 hover:border-white transition-all cursor-pointer"
-                      >
-                        <Image
-                          src={imageUrl}
-                          alt={`Thumbnail ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 640px) 48px, 64px"
-                        />
-                      </div>
-                    ))}
                   </div>
                 </div>
               )}
