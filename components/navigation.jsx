@@ -13,7 +13,7 @@ export default function Navigation() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-16 items-center justify-between px-2 lg:px-4">
         {/* Logo and Brand */}
         <Link href="/" className="flex items-center space-x-2">
           <Wrench className="h-6 w-6 text-primary" />
@@ -21,7 +21,7 @@ export default function Navigation() {
         </Link>
 
         {/* Navigation Links */}
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-1 lg:space-x-4">
           <Button
             variant={pathname === "/" ? "default" : "ghost"}
             size="sm"
@@ -29,7 +29,7 @@ export default function Navigation() {
           >
             <Link href="/" className="flex items-center space-x-2 border">
               <Home className="h-4 w-4" />
-              <span>Home</span>
+              <span className="hidden lg:inline">Home</span>
             </Link>
           </Button>
 
@@ -40,7 +40,7 @@ export default function Navigation() {
           >
             <Link href="/admin" className="flex items-center space-x-2 border">
               <Settings className="h-4 w-4" />
-              <span>Admin</span>
+              <span className="hidden lg:inline">Admin</span>
             </Link>
           </Button>
         </nav>
