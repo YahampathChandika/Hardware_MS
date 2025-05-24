@@ -52,10 +52,7 @@ export default function ProductCard({ product }) {
               <>
                 <Carousel
                   className="w-full h-full"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCardClick();
-                  }}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <CarouselContent className="h-full -ml-0">
                     {images.map((imageUrl, index) => (
@@ -170,7 +167,7 @@ export default function ProductCard({ product }) {
                   <Carousel className="w-full h-full">
                     <CarouselContent className="h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] -ml-0">
                       {images.map((imageUrl, index) => (
-                        <CarouselItem key={index} className="h-full  pl-0">
+                        <CarouselItem key={index} className="h-full pl-0">
                           <div className="relative w-full h-full">
                             <Image
                               src={imageUrl}
