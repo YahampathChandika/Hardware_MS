@@ -59,66 +59,48 @@ export default function ProductList({ product }) {
             {/* Enhanced Image Section */}
             <div className="relative w-full h-48 sm:w-48 sm:h-40 md:w-1/3 md:h-48 lg:w-56 lg:h-52 flex-shrink-0">
               {hasImages ? (
-                <div className="relative h-full">
-                  {/* Display first 1-2 images */}
-                  <div className="flex h-full space-x-0.5 sm:space-x-1">
-                    {displayImages.map((imageUrl, index) => (
-                      <div
-                        key={index}
-                        className={`relative ${
-                          displayImages.length === 1 ? "w-full" : "w-1/2"
-                        } h-full`}
-                      >
-                        <Image
-                          src={imageUrl}
-                          alt={`${product.name} - Image ${index + 1}`}
-                          fill
-                          className={`object-cover transition-transform duration-300 group-hover:scale-105 ${
-                            index === 0
-                              ? displayImages.length === 1
-                                ? "rounded-t-lg sm:rounded-t-none sm:rounded-l-lg"
-                                : "rounded-tl-lg sm:rounded-bl-lg"
-                              : "rounded-tr-lg sm:rounded-br-lg"
-                          }`}
-                          sizes="(max-width: 640px) 100vw, (max-width: 768px) 192px, (max-width: 1024px) 33vw, 224px"
+                <div className="w-full h-48">
+                  <Carousel className="w-full h-full">
+                    <CarouselContent className="h-48 -ml-0">
+                      {images.map((imageUrl, index) => (
+                        <CarouselItem key={index} className="h-full  pl-0">
+                          <div className="relative w-full h-full">
+                            <Image
+                              src={imageUrl}
+                              alt={`${product.name} - Image ${index + 1}`}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 1024px) 100vw, 50vw"
+                              priority={index === 0}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+
+                    {images.length > 1 && (
+                      <>
+                        <CarouselPrevious
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                          className="absolute left-2 sm:left-1 !size-6 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10"
                         />
-                      </div>
-                    ))}
-                  </div>
+                        <CarouselNext
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                          className="absolute right-2 sm:right-1 !size-6 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10"
+                        />
+                      </>
+                    )}
+                  </Carousel>
 
-                  {/* View Details Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/20 rounded-t-lg sm:rounded-t-none sm:rounded-l-lg">
-                    <Button
-                      size="sm"
-                      className="bg-background/90 text-foreground hover:bg-background border backdrop-blur-sm text-xs sm:text-sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleCardClick();
-                      }}
-                    >
-                      <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                      <span className="hidden sm:inline">View Details</span>
-                      <span className="sm:hidden">View</span>
-                    </Button>
-                  </div>
-
-                  {/* Image Counter */}
+                  {/* Image counter */}
                   {images.length > 1 && (
-                    <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 flex items-center space-x-1 text-xs bg-black/70 text-white px-2 py-1 sm:px-3 rounded-full backdrop-blur-sm z-10">
-                      <Images className="h-2 w-2 sm:h-3 sm:w-3" />
-                      <span className="text-xs">
-                        {displayImages.length === 1
-                          ? `1/${images.length}`
-                          : `1-2/${images.length}`}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* More images indicator */}
-                  {images.length > 2 && (
-                    <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
-                      +{images.length - 2} more
-                    </div>
+                    <Badge className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs sm:text-sm z-20">
+                      {images.length} images
+                    </Badge>
                   )}
                 </div>
               ) : (
