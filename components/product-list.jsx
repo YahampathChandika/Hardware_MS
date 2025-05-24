@@ -3,16 +3,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Package,
-  Calendar,
-  Images,
-  Tag,
-  Eye,
-  X,
-} from "lucide-react";
+import { Package, Calendar, Images, Tag, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,47 +13,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { formatPrice } from "@/lib/utils";
 
 export default function ProductList({ product }) {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalImageIndex, setModalImageIndex] = useState(0);
   const images = product.images || [];
   const hasImages = images.length > 0;
 
-  const nextImage = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (hasImages && images.length > 1) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const prevImage = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (hasImages && images.length > 1) {
-      setCurrentImageIndex(
-        (prev) => (prev - 1 + images.length) % images.length
-      );
-    }
-  };
-
-  const nextModalImage = () => {
-    if (hasImages) {
-      setModalImageIndex((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const prevModalImage = () => {
-    if (hasImages) {
-      setModalImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    }
-  };
-
   const handleCardClick = () => {
-    setModalImageIndex(currentImageIndex);
     setModalOpen(true);
   };
 
@@ -74,17 +39,14 @@ export default function ProductList({ product }) {
     });
   };
 
-  // Get current and next image for 2-image display
-  const getCurrentImages = () => {
+  // Get first two images for display
+  const getDisplayImages = () => {
     if (!hasImages) return [];
     if (images.length === 1) return [images[0]];
-
-    const current = images[currentImageIndex];
-    const next = images[(currentImageIndex + 1) % images.length];
-    return [current, next];
+    return [images[0], images[1]];
   };
 
-  const currentImages = getCurrentImages();
+  const displayImages = getDisplayImages();
 
   return (
     <>
@@ -94,28 +56,26 @@ export default function ProductList({ product }) {
       >
         <CardContent className="p-0">
           <div className="flex flex-col sm:flex-row">
-            {/* Enhanced Image Section - Responsive 2 Images */}
+            {/* Enhanced Image Section */}
             <div className="relative w-full h-48 sm:w-48 sm:h-40 md:w-1/3 md:h-48 lg:w-56 lg:h-52 flex-shrink-0">
               {hasImages ? (
                 <div className="relative h-full">
-                  {/* Image Container */}
+                  {/* Display first 1-2 images */}
                   <div className="flex h-full space-x-0.5 sm:space-x-1">
-                    {currentImages.map((imageUrl, index) => (
+                    {displayImages.map((imageUrl, index) => (
                       <div
-                        key={`${currentImageIndex}-${index}`}
+                        key={index}
                         className={`relative ${
-                          currentImages.length === 1 ? "w-full" : "w-1/2"
+                          displayImages.length === 1 ? "w-full" : "w-1/2"
                         } h-full`}
                       >
                         <Image
                           src={imageUrl}
-                          alt={`${product.name} - Image ${
-                            currentImageIndex + index + 1
-                          }`}
+                          alt={`${product.name} - Image ${index + 1}`}
                           fill
                           className={`object-cover transition-transform duration-300 group-hover:scale-105 ${
                             index === 0
-                              ? currentImages.length === 1
+                              ? displayImages.length === 1
                                 ? "rounded-t-lg sm:rounded-t-none sm:rounded-l-lg"
                                 : "rounded-tl-lg sm:rounded-bl-lg"
                               : "rounded-tr-lg sm:rounded-br-lg"
@@ -142,61 +102,22 @@ export default function ProductList({ product }) {
                     </Button>
                   </div>
 
-                  {/* Enhanced Navigation */}
-                  {images.length > (currentImages.length === 1 ? 1 : 2) && (
-                    <>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 h-6 w-6 sm:h-8 sm:w-8 bg-background/90 backdrop-blur-sm hover:bg-background z-20"
-                        onClick={prevImage}
-                      >
-                        <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-                      </Button>
-
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 h-6 w-6 sm:h-8 sm:w-8 bg-background/90 backdrop-blur-sm hover:bg-background z-20"
-                        onClick={nextImage}
-                      >
-                        <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                      </Button>
-                    </>
-                  )}
-
-                  {/* Enhanced Image Counter */}
+                  {/* Image Counter */}
                   {images.length > 1 && (
                     <div className="absolute bottom-1 sm:bottom-2 left-1/2 -translate-x-1/2 flex items-center space-x-1 text-xs bg-black/70 text-white px-2 py-1 sm:px-3 rounded-full backdrop-blur-sm z-10">
                       <Images className="h-2 w-2 sm:h-3 sm:w-3" />
                       <span className="text-xs">
-                        {currentImages.length === 1
-                          ? `${currentImageIndex + 1}/${images.length}`
-                          : `${currentImageIndex + 1}-${Math.min(
-                              currentImageIndex + 2,
-                              images.length
-                            )}/${images.length}`}
+                        {displayImages.length === 1
+                          ? `1/${images.length}`
+                          : `1-2/${images.length}`}
                       </span>
                     </div>
                   )}
 
-                  {/* Hover indicator dots for navigation */}
+                  {/* More images indicator */}
                   {images.length > 2 && (
-                    <div className="absolute bottom-1 sm:bottom-2 right-1 sm:right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                      <div className="flex space-x-0.5 sm:space-x-1">
-                        {Array.from({
-                          length: Math.ceil(images.length / 2),
-                        }).map((_, i) => (
-                          <div
-                            key={i}
-                            className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-colors ${
-                              Math.floor(currentImageIndex / 2) === i
-                                ? "bg-white"
-                                : "bg-white/50"
-                            }`}
-                          />
-                        ))}
-                      </div>
+                    <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full backdrop-blur-sm">
+                      +{images.length - 2} more
                     </div>
                   )}
                 </div>
@@ -293,49 +214,45 @@ export default function ProductList({ product }) {
         </CardContent>
       </Card>
 
-      {/* Product Detail Modal */}
+      {/* Product Detail Modal with Carousel */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="max-w-[95vw] sm:max-w-4xl lg:max-w-6xl xl:max-w-7xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden p-0 mx-2 sm:mx-0">
           <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
             {/* Image Section */}
-            <div className="relative bg-muted order-1 lg:order-1">
+            <div className="relative bg-muted order-1 lg:order-1 flex items-center justify-center">
               {hasImages ? (
-                <div className="relative h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px]">
-                  <Image
-                    src={images[modalImageIndex]}
-                    alt={`${product.name} - Image ${modalImageIndex + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    priority
-                  />
+                <div className="w-full h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px]">
+                  <Carousel className="w-full h-full">
+                    <CarouselContent className="h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] -ml-0">
+                      {images.map((imageUrl, index) => (
+                        <CarouselItem key={index} className="h-full  pl-0">
+                          <div className="relative w-full h-full">
+                            <Image
+                              src={imageUrl}
+                              alt={`${product.name} - Image ${index + 1}`}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 1024px) 100vw, 50vw"
+                              priority={index === 0}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
 
-                  {/* Image Navigation in Modal */}
+                    {images.length > 1 && (
+                      <>
+                        <CarouselPrevious className="absolute left-2 sm:left-4 h-8 w-8 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10" />
+                        <CarouselNext className="absolute right-2 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm z-10" />
+                      </>
+                    )}
+                  </Carousel>
+
+                  {/* Image counter */}
                   {images.length > 1 && (
-                    <>
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm"
-                        onClick={prevModalImage}
-                      >
-                        <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </Button>
-
-                      <Button
-                        variant="secondary"
-                        size="icon"
-                        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 bg-background/80 backdrop-blur-sm"
-                        onClick={nextModalImage}
-                      >
-                        <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                      </Button>
-
-                      {/* Image counter */}
-                      <Badge className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs sm:text-sm">
-                        {modalImageIndex + 1} of {images.length}
-                      </Badge>
-                    </>
+                    <Badge className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs sm:text-sm z-20">
+                      {images.length} images
+                    </Badge>
                   )}
                 </div>
               ) : (
@@ -349,19 +266,14 @@ export default function ProductList({ product }) {
                 </div>
               )}
 
-              {/* Thumbnail strip */}
+              {/* Thumbnail strip - Enhanced */}
               {hasImages && images.length > 1 && (
-                <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4">
+                <div className="absolute bottom-16 sm:bottom-20 left-2 sm:left-4 right-2 sm:right-4 z-30">
                   <div className="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 scrollbar-hide">
                     {images.map((imageUrl, index) => (
-                      <button
+                      <div
                         key={index}
-                        className={`relative flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                          index === modalImageIndex
-                            ? "border-primary scale-110"
-                            : "border-white/50 hover:border-white"
-                        }`}
-                        onClick={() => setModalImageIndex(index)}
+                        className="relative flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 border-white/50 hover:border-white transition-all cursor-pointer"
                       >
                         <Image
                           src={imageUrl}
@@ -370,7 +282,7 @@ export default function ProductList({ product }) {
                           className="object-cover"
                           sizes="(max-width: 640px) 48px, 64px"
                         />
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </div>
